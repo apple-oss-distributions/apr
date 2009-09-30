@@ -68,6 +68,8 @@ XDEFINES	+= \
 
 XLFLAGS		+= \
 			$(EOLIST)
+
+			$(EOLIST)
 endif
 
 ifeq "$(RELEASE)" "release"
@@ -89,35 +91,36 @@ endif
 # This is used by the link 'name' directive to name the nlm.  If left blank
 # TARGET_nlm (see below) will be used.
 #
-NLM_NAME		=aprtest
+NLM_NAME	= globalmutexchild
+
 #
 # This is used by the link '-desc ' directive. 
 # If left blank, NLM_NAME will be used.
 #
-NLM_DESCRIPTION	=  NLM is to test the apr layer
+NLM_DESCRIPTION	= child NLM to test the global Mutex layer
 
 #
 # This is used by the '-threadname' directive.  If left blank,
 # NLM_NAME Thread will be used.
 #
-NLM_THREAD_NAME	= aprtest
+NLM_THREAD_NAME	= $(NLM_NAME)
 
 #
 # This is used by the '-screenname' directive.  If left blank,
 # 'Apache for NetWare' Thread will be used.
 #
-NLM_SCREEN_NAME = aprtest
+NLM_SCREEN_NAME = DEFAULT
 
 #
 # If this is specified, it will override VERSION value in 
 # $(APR_WORK)\build\NWGNUenvironment.inc
 #
-NLM_VERSION		= 1,0,0
+NLM_VERSION	=
 
 #
 # If this is specified, it will override the default of 64K
 #
-NLM_STACK_SIZE = 524288
+NLM_STACK_SIZE	= 
 
 #
 # If this is specified it will be used by the link '-entry' directive
@@ -137,7 +140,7 @@ NLM_CHECK_SYM	=
 #
 # If this is specified it will be used by the link '-flags' directive
 #
-NLM_FLAGS		= AUTOUNLOAD, PSEUDOPREEMPTION
+NLM_FLAGS	= AUTOUNLOAD, PSEUDOPREEMPTION, MULTIPLE
  
 #
 # If this is specified it will be linked in with the XDCData option in the def 
@@ -154,7 +157,7 @@ XDCDATA         =
 # If there is an NLM target, put it here
 #
 TARGET_nlm = \
-	$(OBJDIR)/aprtest.nlm \
+	$(OBJDIR)/$(NLM_NAME).nlm \
 	$(EOLIST)
 
 #
@@ -167,57 +170,10 @@ TARGET_lib = \
 # These are the OBJ files needed to create the NLM target above.
 # Paths must all use the '/' character
 #
-
 FILES_nlm_objs = \
-	$(OBJDIR)/abts.o \
-	$(OBJDIR)/testargs.o \
-	$(OBJDIR)/testatomic.o \
-	$(OBJDIR)/testdir.o \
-	$(OBJDIR)/testdup.o \
-	$(OBJDIR)/testdso.o \
-	$(OBJDIR)/testenv.o \
-	$(OBJDIR)/testfilecopy.o \
-	$(OBJDIR)/testfileinfo.o \
-	$(OBJDIR)/testfile.o \
-	$(OBJDIR)/testflock.o \
-	$(OBJDIR)/testfmt.o \
-	$(OBJDIR)/testfnmatch.o \
-	$(OBJDIR)/testglobalmutex.o \
-	$(OBJDIR)/testhash.o \
-	$(OBJDIR)/testipsub.o \
-	$(OBJDIR)/testlfs.o \
-	$(OBJDIR)/testlock.o \
-        $(OBJDIR)/testcond.o \
-	$(OBJDIR)/testmmap.o \
-	$(OBJDIR)/testnames.o \
-	$(OBJDIR)/testoc.o \
-	$(OBJDIR)/testpath.o \
-	$(OBJDIR)/testpipe.o \
-	$(OBJDIR)/testpoll.o \
-	$(OBJDIR)/testpools.o \
-	$(OBJDIR)/testproc.o \
-	$(OBJDIR)/testprocmutex.o \
-	$(OBJDIR)/testrand.o \
-	$(OBJDIR)/testshm.o \
-	$(OBJDIR)/testsleep.o \
-	$(OBJDIR)/testsock.o \
-	$(OBJDIR)/testsockets.o \
-	$(OBJDIR)/testsockopt.o \
-	$(OBJDIR)/teststr.o \
-	$(OBJDIR)/teststrnatcmp.o \
-	$(OBJDIR)/testtable.o \
-	$(OBJDIR)/testtemp.o \
-	$(OBJDIR)/testthread.o \
-	$(OBJDIR)/testtime.o \
-	$(OBJDIR)/testud.o \
-	$(OBJDIR)/testuser.o \
-	$(OBJDIR)/testutil.o \
-	$(OBJDIR)/testvsn.o \
-	$(OBJDIR)/nw_misc.o \
-	$(EOLIST) 
+	$(OBJDIR)/$(NLM_NAME).o \
+	$(EOLIST)
 
-# Pending tests
-	
 #
 # These are the LIB files needed to create the NLM target above.
 # These will be added as a library command in the link.opt file.
@@ -231,8 +187,8 @@ FILES_nlm_libs = \
 # These will be added as a module command in the link.opt file.
 #
 FILES_nlm_modules = \
+	aprlib \
 	Libc \
-	APRLIB \
 	$(EOLIST)
 
 #
@@ -254,8 +210,8 @@ FILE_nlm_copyright =
 # Any additional imports go here
 #
 FILES_nlm_Ximports = \
+	@$(APR)/aprlib.imp \
 	@libc.imp \
-	@$(APR)/aprlib.imp	\
 	$(EOLIST)
  
 #   
@@ -263,7 +219,7 @@ FILES_nlm_Ximports = \
 #
 FILES_nlm_exports = \
 	$(EOLIST)
-	
+
 #   
 # These are the OBJ files needed to create the LIB target above.
 # Paths must all use the '/' character
@@ -289,12 +245,10 @@ install :: nlms FORCE
 # Any specialized rules here
 #
 
-
 #
 # Include the 'tail' makefile that has targets that depend on variables defined
 # in this makefile
 #
 
 include $(APR_WORK)\build\NWGNUtail.inc
-
 
